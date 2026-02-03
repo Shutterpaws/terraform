@@ -76,7 +76,7 @@ jobs:
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
         run: |
           git add -A
-          git commit -m "chore: apply pre-commit fixes"
+          git commit -m "chore: apply pre-commit fixes [skip ci]"
           git push
 
       - name: Fail if pre-commit found non-fixable issues

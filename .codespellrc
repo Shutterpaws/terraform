@@ -1,3 +1,2 @@
 [settings]
 skip = .git,.terraform
-ignore-words-list =

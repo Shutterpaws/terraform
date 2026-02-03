@@ -88,7 +88,5 @@ curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/instal
 brew install tflint
 ```
 
-
-
 **Terraform validate fails for workspace-specific configs:**
 If your Terraform configuration requires variables or specific workspace settings, you may need to modify the pre-commit configuration to skip the validate hook or adjust it as needed.
