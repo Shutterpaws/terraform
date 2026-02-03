@@ -39,11 +39,6 @@ jobs:
       - name: Set up TFLint
         uses: terraform-linters/setup-tflint@v4
 
-      - name: Set up Terraform Docs
-        uses: terraform-docs/setup-terraform-docs@v1
-        with:
-          version: v0.19.0
-
       - name: Install pre-commit
         run: pip install pre-commit
 
@@ -97,11 +92,6 @@ jobs:
 
       - name: Set up TFLint
         uses: terraform-linters/setup-tflint@v4
-
-      - name: Set up Terraform Docs
-        uses: terraform-docs/setup-terraform-docs@v1
-        with:
-          version: v0.19.0
 
       - name: Install pre-commit
         run: pip install pre-commit
