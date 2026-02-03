@@ -30,6 +30,9 @@ repos:
           - --args=-recursive
       - id: terraform_validate
         name: Terraform validate
+        stages:
+          - commit
+          - push
       - id: terraform_tflint
         name: Terraform linting (tflint)
         args:

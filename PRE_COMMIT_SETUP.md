@@ -10,8 +10,6 @@ Before installing pre-commit hooks, ensure you have:
 - **Terraform 1.0+** - Required for terraform fmt and validate
 - **TFLint** - Required for terraform linting (see [TFLint installation](https://github.com/terraform-linters/tflint))
   - Must be available on your PATH (verify with `tflint --version`)
-- **Terraform Docs** - Required for generating documentation (see [Terraform Docs installation](https://terraform-docs.io/user-guide/installation/))
-  - Must be available on your PATH (verify with `terraform-docs --version`)
 
 ## Installation
 
@@ -42,7 +40,6 @@ Before installing pre-commit hooks, ensure you have:
 - **Merge conflict checker**: Detects merge conflict markers
 - **Terraform format**: Auto-formats Terraform code with `terraform fmt`
 - **Terraform validate**: Validates Terraform configuration syntax
-- **Terraform docs**: Generates documentation from Terraform modules (updates README.md)
 - **Terraform linting**: Checks Terraform code with TFLint for best practices
 - **Codespell**: Checks for common spelling mistakes
 - **YAML linting**: Checks YAML style and formatting
@@ -91,13 +88,7 @@ curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/instal
 brew install tflint
 ```
 
-**Terraform Docs not found:**
-```bash
-# Install Terraform Docs
-curl -s https://raw.githubusercontent.com/terraform-docs/terraform-docs/master/install.sh | bash
-# Or via Homebrew on macOS
-brew install terraform-docs
-```
+
 
 **Terraform validate fails for workspace-specific configs:**
 If your Terraform configuration requires variables or specific workspace settings, you may need to modify the pre-commit configuration to skip the validate hook or adjust it as needed.
