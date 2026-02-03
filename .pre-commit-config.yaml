@@ -1,0 +1,69 @@
+# Pre-commit hooks for Terraform
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of file
+      - id: check-yaml
+        name: Check YAML
+      - id: check-json
+        name: Check JSON
+      - id: check-toml
+        name: Check TOML
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+
+  # Terraform checks
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.92.1
+    hooks:
+      - id: terraform_fmt
+        name: Terraform format
+        args:
+          - --args=-recursive
+      - id: terraform_validate
+        name: Terraform validate
+      - id: terraform_docs
+        name: Terraform docs
+        args:
+          - --hook-config=--path-to-file=README.md
+          - --hook-config=--add-to-existing-file=true
+      - id: terraform_tflint
+        name: Terraform linting (tflint)
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflintrc
+
+  # Spell checking
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+      - id: codespell
+        name: Check spelling
+        exclude: ^(\.terraform/|\.git/)
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.33.0
+    hooks:
+      - id: yamllint
+        name: Lint YAML
+        args:
+          - --config-data
+          - |
+            {
+              extends: default,
+              rules: {
+                line-length: {max: 120},
+                document-start: disable,
+                comments-indentation: disable,
+                truthy: disable
+              }
+            }
+        exclude: ^(\.terraform/)

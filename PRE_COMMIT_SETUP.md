@@ -1,0 +1,103 @@
+# Pre-commit Hooks Setup
+
+This repository uses pre-commit hooks to maintain code quality and consistency for Terraform Infrastructure as Code.
+
+## Prerequisites
+
+Before installing pre-commit hooks, ensure you have:
+
+- **Python 3.8+** - Required for pre-commit itself
+- **Terraform 1.0+** - Required for terraform fmt and validate
+- **TFLint** - Required for terraform linting (see [TFLint installation](https://github.com/terraform-linters/tflint))
+  - Must be available on your PATH (verify with `tflint --version`)
+- **Terraform Docs** - Required for generating documentation (see [Terraform Docs installation](https://terraform-docs.io/user-guide/installation/))
+  - Must be available on your PATH (verify with `terraform-docs --version`)
+
+## Installation
+
+1. Install `pre-commit`:
+
+   ```bash
+   pip install pre-commit
+   ```
+
+2. Install the git hooks:
+
+   ```bash
+   pre-commit install
+   ```
+
+3. (Optional) Run all hooks on all files to check the current state:
+   ```bash
+   pre-commit run --all-files
+   ```
+
+## What Checks Are Included
+
+- **Trailing whitespace**: Removes trailing whitespace from files
+- **End of file fixer**: Ensures files end with a newline
+- **YAML checker**: Validates YAML syntax
+- **JSON checker**: Validates JSON syntax
+- **TOML checker**: Validates TOML syntax
+- **Merge conflict checker**: Detects merge conflict markers
+- **Terraform format**: Auto-formats Terraform code with `terraform fmt`
+- **Terraform validate**: Validates Terraform configuration syntax
+- **Terraform docs**: Generates documentation from Terraform modules (updates README.md)
+- **Terraform linting**: Checks Terraform code with TFLint for best practices
+- **Codespell**: Checks for common spelling mistakes
+- **YAML linting**: Checks YAML style and formatting
+
+## Manual Usage
+
+To run pre-commit checks:
+
+```bash
+# Run on staged files only
+pre-commit run
+
+# Run on all files
+pre-commit run --all-files
+
+# Run a specific hook
+pre-commit run terraform_fmt --all-files
+pre-commit run terraform_validate --all-files
+pre-commit run terraform_tflint --all-files
+
+# Update hooks to latest versions
+pre-commit autoupdate
+```
+
+## Configuration Files
+
+- `.pre-commit-config.yaml` - Main pre-commit configuration
+- `.tflintrc` - TFLint configuration for Terraform linting rules
+- `.codespellrc` - Codespell configuration for spell checking
+
+## Troubleshooting
+
+If a hook fails:
+
+1. Review the error message
+2. Fix the issues manually or let auto-fixing hooks correct them (e.g., `terraform fmt` will auto-fix formatting)
+3. Stage the fixed files and commit again
+
+### Common Issues
+
+**TFLint not found:**
+```bash
+# Install TFLint
+curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+# Or via Homebrew on macOS
+brew install tflint
+```
+
+**Terraform Docs not found:**
+```bash
+# Install Terraform Docs
+curl -s https://raw.githubusercontent.com/terraform-docs/terraform-docs/master/install.sh | bash
+# Or via Homebrew on macOS
+brew install terraform-docs
+```
+
+**Terraform validate fails for workspace-specific configs:**
+If your Terraform configuration requires variables or specific workspace settings, you may need to modify the pre-commit configuration to skip the validate hook or adjust it as needed.
