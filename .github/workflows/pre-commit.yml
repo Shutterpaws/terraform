@@ -6,15 +6,67 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
-  pre-commit:
-    # Only auto-fix on push events; PRs from forks can't push anyway
+  pre-commit-readonly:
+    # Runs on all PRs including forks, validates only
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Cache pre-commit environments
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pre-commit-
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Set up TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Set up Terraform Docs
+        uses: terraform-docs/setup-terraform-docs@v1
+        with:
+          version: v0.19.0
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run pre-commit checks
+        id: pre-commit
+        continue-on-error: true
+        run: |
+          pre-commit run --all-files
+
+      - name: Show validation results
+        if: steps.pre-commit.outcome == 'failure'
+        run: |
+          echo "Pre-commit validation failed. Please review the errors above."
+          git diff HEAD || true
+          exit 1
+
+  pre-commit-autofix:
+    # Only auto-fix on push events or PRs from the same repository
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -47,7 +99,9 @@ jobs:
         uses: terraform-linters/setup-tflint@v4
 
       - name: Set up Terraform Docs
-        uses: terraform-docs/gh-actions@v1.0.0
+        uses: terraform-docs/setup-terraform-docs@v1
+        with:
+          version: v0.19.0
 
       - name: Install pre-commit
         run: pip install pre-commit
@@ -81,27 +135,9 @@ jobs:
           git commit -m "chore: apply pre-commit fixes"
           git push
 
-      - name: Fail if pre-commit found issues that couldn't be auto-fixed
+      - name: Fail if pre-commit found non-fixable issues
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'false'
         run: |
           echo "❌ Pre-commit checks failed with issues that couldn't be auto-fixed."
           echo "Please review the errors above and fix them manually."
           exit 1
-
-      - name: Validate Terraform configuration
-        run: |
-          echo "Validating Terraform configuration..."
-          terraform validate
-          echo "Terraform validation successful"
-
-      - name: Check Terraform format
-        run: |
-          echo "Checking Terraform format..."
-          terraform fmt -check -recursive .
-          echo "Terraform format check successful"
-
-      - name: Run TFLint
-        run: |
-          echo "Running TFLint..."
-          tflint --format compact .
-          echo "TFLint check completed"

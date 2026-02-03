@@ -30,11 +30,6 @@ repos:
           - --args=-recursive
       - id: terraform_validate
         name: Terraform validate
-      - id: terraform_docs
-        name: Terraform docs
-        args:
-          - --hook-config=--path-to-file=README.md
-          - --hook-config=--add-to-existing-file=true
       - id: terraform_tflint
         name: Terraform linting (tflint)
         args:
