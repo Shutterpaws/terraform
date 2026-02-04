@@ -61,7 +61,7 @@ jobs:
         id: changes
         if: steps.pre-commit.outcome == 'failure'
         run: |
-          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+          if [ -z "$(git status --porcelain=v1)" ]; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "Pre-commit checks failed, but no file changes were detected."
           else
