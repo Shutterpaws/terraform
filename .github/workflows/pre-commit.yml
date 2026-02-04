@@ -82,6 +82,12 @@ jobs:
           git commit -m "chore: apply pre-commit fixes [skip ci]"
           git push
 
+      - name: Re-run pre-commit checks to confirm all issues are fixed
+        if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          echo "Re-running pre-commit checks to ensure all issues are resolved..."
+          pre-commit run --all-files
+
       - name: Fail if pre-commit found non-fixable issues
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'false'
         run: |
