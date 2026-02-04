@@ -1,0 +1,96 @@
+name: Pre-commit checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  pre-commit:
+    # Only auto-fix on push events or same-repo PRs; forks can't push anyway
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          ref: ${{ github.head_ref || github.ref }}
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Cache pre-commit environments
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pre-commit-
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ vars.TERRAFORM_VERSION || '1.9.0' }}
+
+      - name: Set up TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.50.3
+
+      - name: Initialize Terraform
+        run: terraform init -backend=false
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run pre-commit checks
+        id: pre-commit
+        continue-on-error: true
+        run: |
+          pre-commit run --all-files
+
+      - name: Check if pre-commit made changes
+        id: changes
+        if: steps.pre-commit.outcome == 'failure'
+        run: |
+          if [ -z "$(git status --porcelain=v1)" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "Pre-commit checks failed, but no file changes were detected."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Pre-commit hooks made the following changes:"
+            git diff HEAD || true
+            echo
+            echo "Git status:"
+            git status --porcelain=v1 || true
+          fi
+
+      - name: Commit and push fixes
+        if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          git add -A
+          git commit -m "chore: apply pre-commit fixes [skip ci]"
+          git push
+
+      - name: Re-run pre-commit checks to confirm all issues are fixed
+        if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          echo "Re-running pre-commit checks to ensure all issues are resolved..."
+          pre-commit run --all-files
+
+      - name: Fail if pre-commit found non-fixable issues
+        if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'false'
+        run: |
+          echo "❌ Pre-commit checks failed with issues that couldn't be auto-fixed."
+          echo "Please review the errors above and fix them manually."
+          exit 1
