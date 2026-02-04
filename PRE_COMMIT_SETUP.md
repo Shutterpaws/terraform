@@ -68,7 +68,7 @@ pre-commit autoupdate
 
 - `.pre-commit-config.yaml` - Main pre-commit configuration
 - `.tflintrc` - TFLint configuration for Terraform linting rules
-- `.codespellrc` - Codespell configuration for spell checking
+- `.codespellrc` - Codespell configuration for spell checking (currently focused on skipping generated/third-party directories; extend this file with ignore lists or a custom dictionary to handle project-specific terms and reduce false positives)
 
 ## GitHub Actions Automation
 
