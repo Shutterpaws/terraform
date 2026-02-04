@@ -82,8 +82,10 @@ If a hook fails:
 
 **TFLint not found:**
 ```bash
-# Install TFLint
-curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+# Install TFLint (download script, review it, then run)
+curl -o install_tflint.sh https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh
+chmod +x install_tflint.sh
+./install_tflint.sh
 # Or via Homebrew on macOS
 brew install tflint
 ```

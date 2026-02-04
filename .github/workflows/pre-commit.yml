@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   pre-commit:
@@ -24,7 +23,7 @@ jobs:
       - name: Set up Git
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -42,10 +41,12 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.9.0"
+          terraform_version: ${{ vars.TERRAFORM_VERSION || '1.9.0' }}
 
       - name: Set up TFLint
         uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.50.3
 
       - name: Install pre-commit
         run: pip install pre-commit

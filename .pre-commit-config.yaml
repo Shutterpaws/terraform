@@ -44,7 +44,7 @@ repos:
     hooks:
       - id: codespell
         name: Check spelling
-        exclude: ^(\.terraform/|\.git/)
+        exclude: \.terraform|\.git
 
   # YAML linting
   - repo: https://github.com/adrienverge/yamllint
@@ -64,4 +64,4 @@ repos:
                 truthy: disable
               }
             }
-        exclude: ^(\.terraform/)
+        exclude: \.terraform
