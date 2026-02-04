@@ -31,8 +31,8 @@ repos:
       - id: terraform_validate
         name: Terraform validate
         stages:
-          - commit
-          - push
+          - pre-commit
+          - pre-push
       - id: terraform_tflint
         name: Terraform linting (tflint)
         args:
