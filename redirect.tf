@@ -37,6 +37,21 @@ resource "cloudflare_ruleset" "shutterpaws_redirect" {
           }
         }
       }
+    },
+    {
+      action      = "redirect"
+      description = "Cherry Event Redirect"
+      enabled     = true
+      expression  = "(http.host eq \"cherry.shutterpaws.pics\")"
+      action_parameters = {
+        from_value = {
+          preserve_query_string = false
+          status_code           = 301
+          target_url = {
+            value = "https://shutterpaws.pics/events/paws-and-petals-march-2026/"
+          }
+        }
+      }
     }
   ]
 }
