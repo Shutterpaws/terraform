@@ -6,8 +6,8 @@ This repository uses pre-commit hooks to maintain code quality and consistency f
 
 Before installing pre-commit hooks, ensure you have:
 
-- **Python 3.8+** - Required for pre-commit itself
-- **Terraform 1.0+** - Required for terraform fmt and validate
+- **Python 3.8+** (Python 3.11 used in CI) - Required for pre-commit itself
+- **Terraform 1.0+** - Required for terraform fmt and validate. Our CI pipeline currently uses Terraform 1.9.0 by default to track recent stable 1.x releases; any Terraform 1.x version (>= 1.0) is supported locally.
 - **TFLint** - Required for terraform linting (see [TFLint installation](https://github.com/terraform-linters/tflint))
   - Must be available on your PATH (verify with `tflint --version`)
 

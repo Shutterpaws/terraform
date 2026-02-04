@@ -72,7 +72,7 @@ jobs:
             git diff HEAD || true
             echo
             echo "Git status:"
-            git status --porcelain || true
+            git status --porcelain=v1 || true
           fi
 
       - name: Commit and push fixes
