@@ -43,7 +43,7 @@ jobs:
           terraform_version: ${{ vars.TERRAFORM_VERSION || '1.9.0' }}
 
       - name: Set up TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v6
         with:
           tflint_version: v0.50.3
 
