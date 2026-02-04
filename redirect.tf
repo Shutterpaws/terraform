@@ -40,8 +40,3 @@ resource "cloudflare_ruleset" "shutterpaws_redirect" {
     }
   ]
 }
-
-import {
-  to = cloudflare_ruleset.shutterpaws_redirect
-  id = "zones/e17b3230e74ebd754a021077835743df/a9dcadfc6fdf4588950d95460cb88415"
-}
