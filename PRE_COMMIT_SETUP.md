@@ -70,6 +70,21 @@ pre-commit autoupdate
 - `.tflintrc` - TFLint configuration for Terraform linting rules
 - `.codespellrc` - Codespell configuration for spell checking
 
+## GitHub Actions Automation
+
+The repository includes a GitHub Actions workflow (`.github/workflows/pre-commit.yml`) that automatically runs pre-commit checks on every pull request and push to the main branch. The workflow can automatically commit and push formatting fixes to PR branches.
+
+### Security Considerations
+
+The workflow uses `contents: write` permission to enable automatic commits of pre-commit fixes. This design includes several security mitigations:
+
+- **Same-repository check**: Auto-fixes only run on PRs from the same repository (`github.event.pull_request.head.repo.full_name == github.repository`). PRs from forks cannot trigger auto-fixes.
+- **CI skip flag**: Commits include `[skip ci]` to prevent infinite workflow loops
+- **Limited scope**: Only changes from pre-commit hooks are committed—no other modifications
+- **Visibility**: All changes are committed with a clear message ("chore: apply pre-commit fixes") and visible in the PR
+
+This approach balances automation with security. If your team prefers manual review of all changes, you can disable the auto-commit functionality by removing the "Commit and push fixes" step from the workflow.
+
 ## Troubleshooting
 
 If a hook fails:
