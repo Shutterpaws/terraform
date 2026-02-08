@@ -48,7 +48,7 @@ resource "cloudflare_ruleset" "shutterpaws_redirect" {
           preserve_query_string = false
           status_code           = 301
           target_url = {
-            value = "https://shutterpaws.pics/events/paws-and-petals-march-2026/"
+            value = "https://shutterpaws.pics/events/2026/03/paws-and-petals/"
           }
         }
       }
