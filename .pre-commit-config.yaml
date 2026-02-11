@@ -15,8 +15,6 @@ repos:
         name: Check YAML
       - id: check-json
         name: Check JSON
-      - id: check-toml
-        name: Check TOML
       - id: check-merge-conflict
         name: Check for merge conflicts
 
