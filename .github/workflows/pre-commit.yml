@@ -79,8 +79,11 @@ jobs:
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
         run: |
           last_author=$(git log -1 --pretty=%an)
+          last_author_email=$(git log -1 --pretty=%ae)
           last_subject=$(git log -1 --pretty=%s)
-          if [ "$last_author" = "github-actions[bot]" ] && echo "$last_subject" | grep -qi "pre-commit"; then
+          if [ "$last_author" = "github-actions[bot]" ] && \
+            [ "$last_author_email" = "41898282+github-actions[bot]@users.noreply.github.com" ] && \
+            [ "$last_subject" = "chore: apply pre-commit fixes" ]; then
             echo "Pre-commit fixes already applied by the bot; refusing to loop."
             exit 1
           fi
