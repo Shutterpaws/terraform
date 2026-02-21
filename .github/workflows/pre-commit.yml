@@ -78,8 +78,14 @@ jobs:
       - name: Commit and push fixes
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
         run: |
+          last_author=$(git log -1 --pretty=%an)
+          last_subject=$(git log -1 --pretty=%s)
+          if [ "$last_author" = "github-actions[bot]" ] && echo "$last_subject" | grep -qi "pre-commit"; then
+            echo "Pre-commit fixes already applied by the bot; refusing to loop."
+            exit 1
+          fi
           git add -A
-          git commit -m "chore: apply pre-commit fixes [skip ci]"
+          git commit -m "chore: apply pre-commit fixes"
           git push
 
       - name: Re-run pre-commit checks to confirm all issues are fixed
