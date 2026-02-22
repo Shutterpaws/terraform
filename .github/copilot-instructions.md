@@ -96,6 +96,10 @@ When it does, it should leave a PR comment summarizing the commit and files
 changed. Forked PRs are read-only and should fail with guidance instead of
 pushing changes.
 
+## Pull Request Policy
+
+Always create a PR for changes in this repo. Never push directly to `main`.
+
 ### 4. Plan Changes
 
 ```bash
