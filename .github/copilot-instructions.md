@@ -89,6 +89,13 @@ terraform validate
 
 This checks for configuration errors without connecting to the backend.
 
+## Pre-commit Auto-Fix
+
+For same-repo PRs, the pre-commit workflow may commit and push auto-fixes.
+When it does, it should leave a PR comment summarizing the commit and files
+changed. Forked PRs are read-only and should fail with guidance instead of
+pushing changes.
+
 ### 4. Plan Changes
 
 ```bash

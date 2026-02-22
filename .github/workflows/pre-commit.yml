@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   pre-commit:
@@ -76,17 +77,49 @@ jobs:
           fi
 
       - name: Commit and push fixes
+        id: commit-fixes
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
         run: |
           last_author=$(git log -1 --pretty=%an)
           last_subject=$(git log -1 --pretty=%s)
           if [ "$last_author" = "github-actions[bot]" ] && echo "$last_subject" | grep -qi "pre-commit"; then
             echo "Pre-commit fixes already applied by the bot; refusing to loop."
+            echo "fixes_committed=false" >> "$GITHUB_OUTPUT"
             exit 1
           fi
           git add -A
           git commit -m "chore: apply pre-commit fixes"
           git push
+          commit_sha=$(git rev-parse HEAD)
+          files=$(git show --name-status --pretty=format: -1)
+          echo "fixes_committed=true" >> "$GITHUB_OUTPUT"
+          echo "commit_sha=$commit_sha" >> "$GITHUB_OUTPUT"
+          echo "changed_files<<'EOF'" >> "$GITHUB_OUTPUT"
+          echo "$files" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on PR with auto-fix details
+        if: steps.commit-fixes.outputs.fixes_committed == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = "${{ steps.commit-fixes.outputs.commit_sha }}";
+            const files = `${{ steps.commit-fixes.outputs.changed_files }}`;
+            const body = [
+              "Pre-commit auto-fix applied and pushed by GitHub Actions.",
+              "",
+              `Commit: ${sha}`,
+              "",
+              "Files:",
+              "```",
+              files,
+              "```",
+              "If checks are still failing, pull the latest changes and rerun pre-commit."
+            ].join("\n");
+            await github.rest.issues.createComment({
+              ...context.issue,
+              body
+            });
 
       - name: Re-run pre-commit checks to confirm all issues are fixed
         if: steps.pre-commit.outcome == 'failure' && steps.changes.outputs.has_changes == 'true'
