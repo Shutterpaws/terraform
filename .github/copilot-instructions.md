@@ -276,19 +276,31 @@ terraform apply
 
 ## CI/CD Considerations
 
-Currently, there are no GitHub Actions or CI/CD workflows configured. If adding CI/CD:
+This repository includes a `.github/workflows/pre-commit.yml` workflow that runs automated checks on push events and may apply auto-fixes with `git push`. When configuring infrastructure:
 
-1. **Use Terraform Cloud runs** for execution
-2. **Store secrets** in GitHub Secrets or TFC
-3. **Require plan approval** before apply
-4. **Enforce branch protection on main** (REQUIRED):
+1. **Use Terraform Cloud runs** for execution (planned for future)
+2. **Store secrets** in GitHub Secrets or TFC (planned for future)
+3. **Require plan approval** before apply (planned for future)
+4. **Enforce branch protection on `main`** (REQUIRED):
    - Require pull request reviews before merging
    - Dismiss stale pull request approvals when new commits are pushed
    - Require status checks to pass before merging
-   - Require code review from code owners
-   - Restrict who can push to matching branches (only through PRs)
+   - If a `CODEOWNERS` file is added, enable "Require review from Code Owners"
+   - Restrict who can push to matching branches (only through PRs), and explicitly configure whether GitHub Actions workflows are allowed to push automated fixes to `main`
 
-The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no direct pushes to main are possible.
+### GitHub Actions & Branch Protection
+
+The `.github/workflows/pre-commit.yml` workflow runs on `push` to `main` and performs auto-fixes with `git push`. This conflicts with a strict "no direct pushes" policy. Choose one approach:
+
+**Option A (Recommended):** Allow GitHub Actions to push to `main` via PAT token, but restrict human direct pushes
+- Configure branch protection to allow only GitHub Actions workflow bypasses
+- Document this exception clearly in commit messages
+
+**Option B:** Disable auto-fix on `main`
+- Remove `push: [main]` trigger or skip auto-fix commits when branch is `main`
+- Require manual fix approval via PR
+
+The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no unintended direct pushes to `main` occur.
 
 ## Terraform Best Practices for This Repo
 
