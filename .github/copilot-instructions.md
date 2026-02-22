@@ -54,6 +54,13 @@ terraform login
 
 ## Common Workflows
 
+### Pull Request Policy
+
+All changes to this repository must go through pull requests. **Never push directly to `main`.** This is a strict requirement enforced by:
+- Branch protection rules (see CI/CD Considerations)
+- Code review workflow via PRs
+- Automated checks and validations
+
 ### 1. Initialize Terraform
 
 ```bash
@@ -95,10 +102,6 @@ For same-repo PRs, the pre-commit workflow may commit and push auto-fixes.
 When it does, it should leave a PR comment summarizing the commit and files
 changed. Forked PRs are read-only and should fail with guidance instead of
 pushing changes.
-
-## Pull Request Policy
-
-Always create a PR for changes in this repo. Never push directly to `main`.
 
 ### 4. Plan Changes
 
@@ -278,7 +281,14 @@ Currently, there are no GitHub Actions or CI/CD workflows configured. If adding 
 1. **Use Terraform Cloud runs** for execution
 2. **Store secrets** in GitHub Secrets or TFC
 3. **Require plan approval** before apply
-4. **Use branch protection** for main branch
+4. **Enforce branch protection on main** (REQUIRED):
+   - Require pull request reviews before merging
+   - Dismiss stale pull request approvals when new commits are pushed
+   - Require status checks to pass before merging
+   - Require code review from code owners
+   - Restrict who can push to matching branches (only through PRs)
+
+The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no direct pushes to main are possible.
 
 ## Terraform Best Practices for This Repo
 
