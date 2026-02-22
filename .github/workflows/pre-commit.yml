@@ -92,11 +92,13 @@ jobs:
           git push
           commit_sha=$(git rev-parse HEAD)
           files=$(git show --name-status --pretty=format: -1)
-          echo "fixes_committed=true" >> "$GITHUB_OUTPUT"
-          echo "commit_sha=$commit_sha" >> "$GITHUB_OUTPUT"
-          echo "changed_files<<'EOF'" >> "$GITHUB_OUTPUT"
-          echo "$files" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          {
+            echo "fixes_committed=true"
+            echo "commit_sha=$commit_sha"
+            echo "changed_files<<'EOF'"
+            echo "$files"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Comment on PR with auto-fix details
         if: steps.commit-fixes.outputs.fixes_committed == 'true' && github.event_name == 'pull_request'
