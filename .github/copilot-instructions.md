@@ -276,7 +276,7 @@ terraform apply
 
 ## CI/CD Considerations
 
-This repository includes a `.github/workflows/pre-commit.yml` workflow (see Details below). When configuring infrastructure:
+This repository includes a `.github/workflows/pre-commit.yml` workflow (see **GitHub Actions & Branch Protection** below). When configuring infrastructure:
 
 1. **Use Terraform Cloud runs** for execution (planned for future)
 2. **Store secrets** in GitHub Secrets or TFC (planned for future)
