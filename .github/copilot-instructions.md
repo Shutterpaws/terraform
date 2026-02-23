@@ -298,7 +298,7 @@ The repository includes a `.github/workflows/pre-commit.yml` workflow that runs 
 - If stricter bypass control is needed later, configure a PAT in repository secrets and update the workflow to use it explicitly
 
 **Option B:** Disable auto-fix on `main`
-- Remove the `on: push: branches: [main]` trigger (or equivalent) or skip auto-fix commits when the branch is `main`
+- Remove the `on: push: branches: [main]` trigger (or equivalent), or add conditional logic in the workflow so that auto-fix steps (including `git push`) are skipped when running on the `main` branch (for example, by checking that `github.ref != 'refs/heads/main'` before pushing)
 - Require manual fix approval via PR
 
 The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no direct human pushes to `main` are possible and that any GitHub Actions bypasses are intentional and documented.
