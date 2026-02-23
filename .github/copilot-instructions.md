@@ -52,6 +52,13 @@ terraform login
 
 **Note:** Without proper authentication, `terraform init` will fail when attempting to connect to the remote backend.
 
+## Pull Request Policy
+
+All human-originated changes to this repository must go through pull requests. **Human users must never push directly to `main`.** This is a strict requirement and must be enforced by repository configuration in GitHub. Automated systems (e.g., GitHub Actions) may only push directly to `main` where explicitly allowed by the CI/CD policy and branch protection rules (see CI/CD Considerations below).
+- Branch protection rules on `main` (GitHub: Settings → Branches → Branch protection rules; see also CI/CD Considerations below)
+- Code review workflow via PRs (e.g., require at least one approving review)
+- Automated checks and validations configured in CI (see CI/CD Considerations below)
+
 ## Common Workflows
 
 ### 1. Initialize Terraform
@@ -269,12 +276,32 @@ terraform apply
 
 ## CI/CD Considerations
 
-Currently, there are no GitHub Actions or CI/CD workflows configured. If adding CI/CD:
+This repository includes a `.github/workflows/pre-commit.yml` workflow (see **GitHub Actions & Branch Protection** below). When configuring infrastructure:
 
-1. **Use Terraform Cloud runs** for execution
-2. **Store secrets** in GitHub Secrets or TFC
-3. **Require plan approval** before apply
-4. **Use branch protection** for main branch
+1. **Use Terraform Cloud runs** for execution (planned for future)
+2. **Store secrets** in GitHub Secrets or TFC (planned for future)
+3. **Require plan approval** before apply (planned for future)
+4. **Enforce branch protection on `main`** (REQUIRED):
+   - Require pull request reviews before merging
+   - Dismiss stale pull request approvals when new commits are pushed
+   - Require status checks to pass before merging
+   - If a `CODEOWNERS` file is added, enable "Require review from Code Owners"
+   - Restrict who can push to matching branches (only through PRs), and explicitly configure whether GitHub Actions workflows are allowed to push automated fixes to `main`
+
+### GitHub Actions & Branch Protection
+
+The repository includes a `.github/workflows/pre-commit.yml` workflow that runs on both `on: push: branches: [main]` and `pull_request` events, and performs auto-fixes with `git push` using the default `GITHUB_TOKEN` (with `permissions: contents: write`). This behavior can conflict with the strict "no direct pushes" policy described in Pull Request Policy. Choose one approach:
+
+**Option A (Recommended):** Allow GitHub Actions to push to `main` using the default `GITHUB_TOKEN`, but restrict human direct pushes
+- Configure branch protection to allow only GitHub Actions workflow bypasses
+- Document this exception clearly in commit messages
+- If stricter bypass control is needed later, configure a PAT in repository secrets and update the workflow to use it explicitly
+
+**Option B:** Disable auto-fix on `main`
+- Remove the `on: push: branches: [main]` trigger (or equivalent), or add conditional logic in the workflow so that auto-fix steps (including `git push`) are skipped when running on the `main` branch (for example, by checking that `github.ref != 'refs/heads/main'` before pushing)
+- Require manual fix approval via PR
+
+The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no direct human pushes to `main` are possible and that any GitHub Actions bypasses are intentional and documented.
 
 ## Terraform Best Practices for This Repo
 
