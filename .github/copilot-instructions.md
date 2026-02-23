@@ -52,14 +52,14 @@ terraform login
 
 **Note:** Without proper authentication, `terraform init` will fail when attempting to connect to the remote backend.
 
-## Common Workflows
-
-### Pull Request Policy
+## Pull Request Policy
 
 All changes to this repository must go through pull requests. **Never push directly to `main`.** This is a strict requirement enforced by:
-- Branch protection rules (see CI/CD Considerations)
+- Branch protection rules (see CI/CD Considerations below)
 - Code review workflow via PRs
 - Automated checks and validations
+
+## Common Workflows
 
 ### 1. Initialize Terraform
 
@@ -276,7 +276,9 @@ terraform apply
 
 ## CI/CD Considerations
 
-This repository includes a `.github/workflows/pre-commit.yml` workflow that runs automated checks on push events and may apply auto-fixes with `git push`. When configuring infrastructure:
+This repository includes a `.github/workflows/pre-commit.yml` workflow that runs automated checks on both `push` to `main` and `pull_request` events, and may apply auto-fixes with `git push`. The workflow uses the default `GITHUB_TOKEN` (with `permissions: contents: write`) for push operations.
+
+When configuring infrastructure:
 
 1. **Use Terraform Cloud runs** for execution (planned for future)
 2. **Store secrets** in GitHub Secrets or TFC (planned for future)
@@ -290,17 +292,18 @@ This repository includes a `.github/workflows/pre-commit.yml` workflow that runs
 
 ### GitHub Actions & Branch Protection
 
-The `.github/workflows/pre-commit.yml` workflow runs on `push` to `main` and performs auto-fixes with `git push`. This conflicts with a strict "no direct pushes" policy. Choose one approach:
+The `.github/workflows/pre-commit.yml` workflow runs on both `push` to `main` and `pull_request` events, and performs auto-fixes with `git push` using the default `GITHUB_TOKEN` (with `permissions: contents: write`). This can conflict with a strict "no direct pushes" policy. Choose one approach:
 
-**Option A (Recommended):** Allow GitHub Actions to push to `main` via PAT token, but restrict human direct pushes
+**Option A (Recommended):** Allow GitHub Actions to push to `main` using the default `GITHUB_TOKEN`, but restrict human direct pushes
 - Configure branch protection to allow only GitHub Actions workflow bypasses
 - Document this exception clearly in commit messages
+- If stricter bypass control is needed later, configure a PAT in repository secrets and update the workflow to use it explicitly
 
 **Option B:** Disable auto-fix on `main`
 - Remove `push: [main]` trigger or skip auto-fix commits when branch is `main`
 - Require manual fix approval via PR
 
-The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no unintended direct pushes to `main` occur.
+The branch protection rules must be configured to technically enforce the Pull Request Policy established in this document, ensuring no direct human pushes to `main` are possible and that any GitHub Actions bypasses are intentional and documented.
 
 ## Terraform Best Practices for This Repo
 
