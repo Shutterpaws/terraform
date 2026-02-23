@@ -54,7 +54,7 @@ terraform login
 
 ## Pull Request Policy
 
-All changes to this repository must go through pull requests. **Never push directly to `main`.** This is a strict requirement and must be enforced by repository configuration in GitHub:
+All human-originated changes to this repository must go through pull requests. **Human users must never push directly to `main`.** This is a strict requirement and must be enforced by repository configuration in GitHub. Automated systems (e.g., GitHub Actions) may only push directly to `main` where explicitly allowed by the CI/CD policy and branch protection rules (see CI/CD Considerations below).
 - Branch protection rules on `main` (GitHub: Settings → Branches → Branch protection rules; see also CI/CD Considerations below)
 - Code review workflow via PRs (e.g., require at least one approving review)
 - Automated checks and validations configured in CI (see CI/CD Considerations below)
